@@ -24,6 +24,8 @@
  */
 
 #include "purging_rmw.h"
+#include "config.h"
+#include "rm.h"
 
 int
 rmdir_recursive (char *path, short unsigned level)
@@ -408,7 +410,7 @@ purge (const short purge_after, const struct waste_containers *waste,
 
         if (S_ISDIR (st.st_mode))
         {
-          status = rmdir_recursive (purgeFile, 1);
+          status = rmdir_recursive2 (2, purgeFile);
           switch (status)
           {
           case NOT_WRITEABLE:
