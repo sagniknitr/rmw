@@ -24,13 +24,10 @@
  *
  */
 
+#include "rmw.h"
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <getopt.h>
-
-#ifndef INC_RMW_H
-#define INC_RMW_H
-  #include "rmw.h"
-#endif
 
 #include "utils_rmw.h"
 #include "restore_rmw.h"
@@ -50,6 +47,13 @@ get_time_string (char *tm_str, ushort len, const char *format);
 int
 main (int argc, char *argv[])
 {
+  /* If MP was defined as something other than a number when building */
+  if (MP < 1)
+  {
+    fprintf (stderr, "  :Error: MP must be defined as a number\n");
+    exit (1);
+  }
+
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -356,15 +360,15 @@ Unable to continue. Exiting...\n"));
 
     for (file_arg = optind; file_arg < argc; file_arg++)
     {
-      strcpy (file.main_argv, argv[file_arg]);
-
       /**
        * The undo file may be open at this point, so using 'break'
        * After the for loop is the statement to close file, then
        * return EXIT_BUF_ERR
        */
-      if ((main_error = bufchk (file.main_argv, MP)))
+      if ((main_error = bufchk (argv[file_arg], MP)))
         break;
+
+      strcpy (file.main_argv, argv[file_arg]);
 
       /**
        * Check to see if the file exists, and if so, see if it's protected
@@ -373,6 +377,13 @@ Unable to continue. Exiting...\n"));
       if (exists (file.main_argv) == 0)
       {
         main_error = resolve_path (file.main_argv, file.real_path);
+
+#ifdef DEBUG
+DEBUG_PREFIX
+printf ("file.real_path = %s in %s\n", file.real_path, __func__);
+DEBUG_PREFIX
+printf ("file.main_argv = %s in %s\n", file.main_argv, __func__);
+#endif
 
         if (main_error == 1)
           continue;
@@ -478,8 +489,21 @@ Unable to continue. Exiting...\n"));
               printf ("'%s' -> '%s'\n", file.main_argv, file.dest_name);
 
             rmwed_files++;
+#ifdef DEBUG
+DEBUG_PREFIX
+printf ("file.real_path = %s in %s line %d\n", file.real_path, __func__, __LINE__);
+DEBUG_PREFIX
+printf ("file.base_name = %s in %s line %d\n", file.base_name, __func__, __LINE__);
+#endif
             info_status = create_trashinfo (file, waste,
                               time_now, time_str_appended, current_waste_num);
+
+#ifdef DEBUG
+DEBUG_PREFIX
+printf ("file.real_path = %s in %s line %d\n", file.real_path, __func__, __LINE__);
+DEBUG_PREFIX
+printf ("file.base_name = %s in %s line %d\n", file.base_name, __func__, __LINE__);
+#endif
 
             if (info_status == 0)
             {

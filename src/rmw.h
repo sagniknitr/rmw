@@ -24,8 +24,13 @@
  *
  */
 
+#ifndef _INC_RMW_H
+#define _INC_RMW_H
+
 /* Enable support for files over 2G  */
 #define _FILE_OFFSET_BITS 64
+
+#define _XOPEN_SOURCE 600
 
 #include "config.h"
 #include <errno.h>
@@ -40,6 +45,10 @@
 #define _(String) gettext (String)
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
+
+#ifdef DEBUG
+# define DEBUG_PREFIX printf ("[DEBUG] ");
+#endif
 
 #ifndef VERSION
   #define VERSION "unversioned"
@@ -79,8 +88,13 @@
 #define PATH_MAX 256
 #endif
 
+/* MP can be defined before building when running running ./configure
+ * ex. '$ CFLAGS=-DMP=n ./configure`
+ */
+#ifndef MP
 /** shorten PATH_MAX to two characters */
-#define MP PATH_MAX + 1
+#   define MP PATH_MAX + 1
+#endif
 
 #ifndef ushort
   #define ushort unsigned short int
@@ -122,3 +136,5 @@ enum {
   ERR_OPEN,
   ERR_CLOSE
 };
+
+#endif

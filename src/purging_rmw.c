@@ -23,11 +23,7 @@
  *
  */
 
-#ifndef INC_RMW_H
-#define INC_RMW_H
-  #include "rmw.h"
-#endif
-
+#include "rmw.h"
 #include "purging_rmw.h"
 #include "messages_rmw.h"
 #include "strings_rmw.h"
@@ -164,6 +160,11 @@ purge (const short purge_after, const struct waste_containers *waste,
 
   if (getenv ("RMWTRASH") != NULL)
     cmd_empty = strcmp (getenv ("RMWTRASH"), "empty") ? 0 : 1;
+    
+  if(cmd_empty)
+    printf (_("\nPurging all files in waste folders ...\n"));
+  else
+    printf (_("\nPurging files based on number of days in the waste folders (%u) ...\n"), purge_after);
 
   struct stat st;
 
@@ -177,8 +178,6 @@ purge (const short purge_after, const struct waste_containers *waste,
 
   strptime (time_now, "%Y-%m-%dT%H:%M:%S", &tmPtr);
   now = mktime (&tmPtr);
-
-  printf (_("\nPurging files (purge_after = %u) ...\n"), purge_after);
 
   /**
    *  Read each <WASTE>/info directory

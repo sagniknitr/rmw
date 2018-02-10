@@ -8,7 +8,16 @@ compiler:
   - clang
   - gcc
 
-script: ./configure --prefix=$PWD/temp-build && make && make install
+script:
+  - ./configure --prefix=$PWD/temp-build
+  - make
+  - make install
+  - cd test
+  - ./basic.sh
+  - rm -rf tmp-home
+  - ./purging.sh
+  - cd ..
+  - make uninstall
 
 # safelist
 branches:

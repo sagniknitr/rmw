@@ -24,9 +24,6 @@
  */
 
 #include <sys/stat.h>
-
-/* _XOPEN Needed for strptime() */
-# define __USE_XOPEN
 #include <time.h>
 
 #include <dirent.h>
